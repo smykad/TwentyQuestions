@@ -150,35 +150,90 @@ def closing(key_to_append, name):
 #                   Question User
 #   **********************************************************
 def question_user(a_dict, questions, name, file_name, question_file):
+
+    # List to hold definitions
+
     yes_list = []
+
+    # Booleans for conditions that need to be met
+
     answer_found = False
     list_length = False
     out_of_questions = False
+
+    # Variable for number of questions in the list
+
     num_of_questions = len(questions)
+
+    # Variable for incrementing questions asked
+
     num_asked = 0
 
+    # Iterate through questions in questions
+
     for question in questions:
+
+        # Validate user input using inputChoice from pyInputPlus
+
         user_choice = pyip.inputChoice(["yes", "no"], f"Is the {file_name} you're thinking of {question}? ")
+
+        # Increment number of questions asked
+
         num_asked += 1
+
+        # If user choice is yes
+
         if user_choice == "yes":
+
+            # Append list I created earlier
+
             yes_list.append(question)
+
+        # Once appended list holds 2 facts it breaks the loop
+
         if len(yes_list) == 2:
             list_length = True
             break
+
+        # If we run out of questions to ask it breaks the loop
+
         if num_asked == num_of_questions and len(yes_list) < 2:
             out_of_questions = True
             break
 
+    # If application doesn't know what you were thinking it will ask you
+
     if out_of_questions is True:
         print(f"{name} I have run out of questions, I only had {num_of_questions}")
         key_to_append = pyip.inputStr(f"What {file_name} were you thinking of? ")
+
+        # Ask user for description of item
+
         append_list(file_name, yes_list, questions, question_file)
+
+        # If there isn't 2 descriptions for the item
+
         if len(yes_list) < 2:
             append_list(file_name, yes_list, questions, question_file)
+
+        # Append the key and the value list
+
         add(a_dict, key_to_append, yes_list)
+
+        # Write to file
+
         writing_file(file_name, a_dict)
+
+        # Print an acknowledgement of appending key/value list
+
         closing(key_to_append, name)
+
+        # Set boolean to true so it doesn't run code later
+
         answer_found = True
+
+    # Iterates through value lists matches to keys (if there are multiple keys with the same list it will
+    # iterate through them all until it gets the correct one
 
     if list_length is True:
         for key, value in a_dict.items():
@@ -187,11 +242,27 @@ def question_user(a_dict, questions, name, file_name, question_file):
                 if user_choice == "yes":
                     print(f"It took me {num_asked} questions to guess what you were thinking!")
                     answer_found = True
+                else:
+
+                    # increment numbers of questions asked
+
+                    num_asked += 1
+
+    # If the value list is complete it will ask for a key to append
 
     if answer_found is False:
         key_to_append = pyip.inputStr(f"What {file_name} were you thinking of? ")
+
+        # Adds the key and value list to the dictionary
+
         add(a_dict, key_to_append, yes_list)
+
+        # Write to file
+
         writing_file(file_name, a_dict)
+
+        # Prints a statement that key has been added and written
+
         closing(key_to_append, name)
 
 
@@ -200,8 +271,19 @@ def question_user(a_dict, questions, name, file_name, question_file):
 #   **********************************************************
 def main():
 
+    # Greet the user and get their name
+
     name = greet_user_get_name()
+
+    # Checks if the application has been run before, if it has check if user has used it before
+    # If it has not been run before it creates the files needed for application to run
+    # If it has been run before and user is in the list of names it welcomes them back
+    # If it has been run before and its a new user it adds them to the list and informs user
+
     file_exists("names", name)
+
+    # Loops the game until the player no longer want's to play
+
     while play_again(name) == "yes":
         file_name = animals_vegetables("What category would you like to choose? (vegetable or animal) ")
         a_dict = reading_file(file_name)
@@ -209,8 +291,12 @@ def main():
         questions = reading_file(question_file)
         question_user(a_dict, questions, name, file_name, question_file)
 
+    # End of application thanks user for using application
+
     print(f"Thank you for using my application {name}!")
 
+
+# Run main function
 
 main()
 
